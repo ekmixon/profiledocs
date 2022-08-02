@@ -67,17 +67,9 @@ for page in PDFPage.create_pages(document):
     interpreter.process_page(page)
     # receive the LTPage object for the page.
     layout = device.get_result()
-    lines = []  # Lines by y0
     within_lines = {}
 
-    # First Pass: Lines
-    for obj in layout:
-        # print(obj)
-        if isinstance(obj, LTLine):
-            lines.append(obj.y0)
-            #if obj.linewidth > 0.7:  # Thicker line above Key, Type, Value
-            #    print(obj.linewidth)
-
+    lines = [obj.y0 for obj in layout if isinstance(obj, LTLine)]
     # Second Pass: TextBoxes nearest lines
     for obj in layout:
         if isinstance(obj, LTTextBoxHorizontal):

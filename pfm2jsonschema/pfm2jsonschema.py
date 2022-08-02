@@ -30,21 +30,18 @@ def pfm_to_jsontype(pfm_type):
 
     if pfm_type in translated:
         return translated[pfm_type]
-    else:
-        logger.debug("possibly unhandled pfm_type: {}".format(pfm_type))
-        # Types that are identically named: array, string
-        return pfm_type
+    logger.debug(f"possibly unhandled pfm_type: {pfm_type}")
+    # Types that are identically named: array, string
+    return pfm_type
 
 def generate_pfm_item(data, result):
     """Generate a JSON Schema object from a pfm item i.e an item in the schema that has at least a pfm_name."""
-    logger.debug("generating schema for property: {}".format(data['pfm_name']))
+    logger.debug(f"generating schema for property: {data['pfm_name']}")
 
     if data['pfm_name'] in result:
-        raise Exception('Already in properties dict: {}'.format(data['pfm_name']))
+        raise Exception(f"Already in properties dict: {data['pfm_name']}")
 
-    prop = {}
-    prop['type'] = pfm_to_jsontype(data['pfm_type'])
-
+    prop = {'type': pfm_to_jsontype(data['pfm_type'])}
     if 'pfm_description' in data:
         prop['description'] = data['pfm_description']
 
@@ -90,7 +87,7 @@ def generate(data, result):
 
     if isinstance(data, dict):
         if 'pfm_name' in data:
-            logging.debug("generate pfm dict: {}".format(data['pfm_name']))
+            logging.debug(f"generate pfm dict: {data['pfm_name']}")
             return generate_pfm_item(data, result)
         elif 'pfm_version' in data: # probably top level dict
             logging.debug("generate pfm header")
@@ -128,7 +125,7 @@ if __name__ == "__main__":
     generate(plist, result)
 
     if options.output:
-        with open(os.path.join(options.output, '{}.json'.format(domain)), 'w+') as f:
+        with open(os.path.join(options.output, f'{domain}.json'), 'w+') as f:
             json.dump(result, f, indent=4)
     else:
         print(json.dumps(result))

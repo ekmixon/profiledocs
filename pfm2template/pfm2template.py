@@ -14,26 +14,33 @@ def generate_payload(data, result):
     result['PayloadType'] = 'Configuration'
     result['PayloadOrganization'] = 'Example Organization'
     result['PayloadUUID'] = str(uuid.uuid4())
-    result['PayloadIdentifier'] = '{}.example'.format(data.get('pfm_domain', 'domain.undefined'))
-    result['PayloadDisplayName'] = 'Example: {}'.format(data.get('pfm_title'), 'No Title')
-    result['PayloadDescription'] = 'Example: {}'.format(data.get('pfm_description'), 'No Description')
+    result[
+        'PayloadIdentifier'
+    ] = f"{data.get('pfm_domain', 'domain.undefined')}.example"
+
+    result['PayloadDisplayName'] = f"Example: {data.get('pfm_title')}"
+    result['PayloadDescription'] = f"Example: {data.get('pfm_description')}"
     result['PayloadVersion'] = '1'
     result['PayloadContent'] = [{}]
     generate(data['pfm_subkeys'], result['PayloadContent'][0])
 
 
 def generate_dict(data, result):
-    if 'pfm_version' in data:  # Probably a top level dict
-        result['PayloadType'] = 'Configuration'
-        result['PayloadOrganization'] = 'Example Organization'
-        result['PayloadUUID'] = str(uuid.uuid4())
-        result['PayloadIdentifier'] = '{}.example'.format(data.get('pfm_domain', 'domain.undefined'))
-        result['PayloadDisplayName'] = 'Example: {}'.format(data.get('pfm_title'), 'No Title')
-        result['PayloadDescription'] = 'Example: {}'.format(data.get('pfm_description'), 'No Description')
-        result['PayloadVersion'] = '1'
-        result['PayloadContent'] = [{}]
+    if 'pfm_version' not in data:
+        return
+    result['PayloadType'] = 'Configuration'
+    result['PayloadOrganization'] = 'Example Organization'
+    result['PayloadUUID'] = str(uuid.uuid4())
+    result[
+        'PayloadIdentifier'
+    ] = f"{data.get('pfm_domain', 'domain.undefined')}.example"
 
-        generate(data['pfm_subkeys'], result['PayloadContent'][0])
+    result['PayloadDisplayName'] = f"Example: {data.get('pfm_title')}"
+    result['PayloadDescription'] = f"Example: {data.get('pfm_description')}"
+    result['PayloadVersion'] = '1'
+    result['PayloadContent'] = [{}]
+
+    generate(data['pfm_subkeys'], result['PayloadContent'][0])
 
 def pfm_value(key_type, default=None, range_list=None):
     """Generate an appropriate empty value"""
@@ -60,7 +67,7 @@ def pfm_value(key_type, default=None, range_list=None):
     elif key_type == "date":
         return "2013-10-12T06:07:27Z"
     else:
-        raise Exception("Unhandled type {}".format(key_type))
+        raise Exception(f"Unhandled type {key_type}")
 
 def generate_list(data, result):
     for item in data:
@@ -83,10 +90,10 @@ def generate_list(data, result):
 
 def generate_pfm_item(data, result):
     """Generate a plist key/value pair from a pfm item i.e an item in the schema that has at least a pfm_name."""
-    logger.debug("generating kv pair for property: {}".format(data['pfm_name']))
+    logger.debug(f"generating kv pair for property: {data['pfm_name']}")
 
     if data['pfm_name'] in result:
-        raise Exception('Already in properties dict: {}'.format(data['pfm_name']))
+        raise Exception(f"Already in properties dict: {data['pfm_name']}")
 
     if 'pfm_subkeys' in data:
         if data.get('pfm_type', None) == 'array':
@@ -112,7 +119,7 @@ def generate(data, result):
 
     if isinstance(data, dict):
         if 'pfm_name' in data:
-            logging.debug("generate pfm dict: {}".format(data['pfm_name']))
+            logging.debug(f"generate pfm dict: {data['pfm_name']}")
             return generate_pfm_item(data, result)
         elif 'pfm_version' in data:  # probably top level dict
             logging.debug("generate pfm header")
@@ -148,7 +155,10 @@ if __name__ == "__main__":
     generate(plist, result)
 
     if options.output:
-        plistlib.writePlist(result, os.path.join(options.output, '{}.mobileconfig'.format(domain)))
+        plistlib.writePlist(
+            result, os.path.join(options.output, f'{domain}.mobileconfig')
+        )
+
     else:
         from pprint import pprint
         pprint(result)

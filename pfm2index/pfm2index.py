@@ -11,7 +11,7 @@ from optparse import OptionParser
 logger = logging.getLogger('pfm2index')
 
 def generate_item(manifest_path):
-    print('processing: {}'.format(manifest_path))
+    print(f'processing: {manifest_path}')
     try:
         p = plistlib.readPlist(manifest_path)
         result = {
@@ -30,9 +30,7 @@ def generate_item(manifest_path):
         }
     except ValueError as e:
         result = {'ManifestPath': manifest_path, 'error': True, 'errorMessage': e.message}
-        print('skipping: {}'.format(manifest_path))
-        pass
-
+        print(f'skipping: {manifest_path}')
     return result
 
 
